@@ -6,7 +6,7 @@ from pathlib import Path
 
 from learnastropytutorialtheme.html import LearnAstropyHtmlExporter
 
-from .lib.helpers import write_conversion
+from .support.helpers import write_conversion
 
 
 def test_html_export() -> None:
