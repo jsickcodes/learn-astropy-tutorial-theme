@@ -69,3 +69,9 @@ main {
   color: var(--astropy-primary-color);
   text-decoration: underline;
 }
+
+.at-tutorial-footer {
+  margin-top: 2rem;
+  border-top: 1px solid var(--astropy-primary-color);
+  width: 100%;
+}
