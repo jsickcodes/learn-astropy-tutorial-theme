@@ -1,3 +1,7 @@
+:root {
+  --astropy-primary-color: #fa743b;
+}
+
 body {
   display: grid;
   grid-template-columns: 18rem 1fr;
@@ -14,6 +18,10 @@ header {
   padding: 0.5rem;
   background-color: #000;
   color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 main {
@@ -29,4 +37,35 @@ main {
 .at-tutorial-footer {
   grid-area: 3 / 1 / 4 / 3;
   padding: 0.5rem;
+}
+
+.at-logotext {
+  font-size: 1.2rem;
+}
+
+.at-logotext a:hover {
+  color: var(--astropy-primary-color);
+}
+
+.at-logotext__primary {
+  font-weight: bold;
+}
+
+.at-logotext__divider {
+  opacity: 50%;
+  color: var(--astropy-primary-color);
+}
+
+.at-header-nav {
+  display: flex;
+  font-weight: bold;
+}
+
+.at-header-nav a {
+  margin-left: 1.5rem;
+}
+
+.at-header-nav a:hover {
+  color: var(--astropy-primary-color);
+  text-decoration: underline;
 }
