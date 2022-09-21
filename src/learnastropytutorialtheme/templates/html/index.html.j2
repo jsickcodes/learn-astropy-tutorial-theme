@@ -42,6 +42,7 @@
 {% else %}
     {{ resources.include_lab_theme(resources.theme) }}
 {% endif %}
+{{ resources.include_css("astropytutorial.css") }}
 <style type="text/css">
 /* Force rendering true colors when outputing to pdf */
 * {
@@ -159,6 +160,21 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 {% endif %}
 {%- endblock body_header -%}
+
+{% block body_loop %}
+
+{% include "astropy-header.html.j2" %}
+
+{% include "astropy-sidebar.html.j2" %}
+
+<nav class="at-notebook-sidebar">Sidebar content</nav>
+
+<main class="at-notebook-wrapper">
+{{ super() }}
+</main>
+
+<footer class="at-tutorial-footer">Astropy footer</footer>
+{% endblock body_loop %}
 
 {% block body_footer %}
 </body>
