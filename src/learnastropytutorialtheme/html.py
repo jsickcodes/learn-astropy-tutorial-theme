@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 from nbconvert.exporters.html import HTMLExporter
 
@@ -25,3 +25,11 @@ class LearnAstropyHtmlExporter(HTMLExporter):
         return str(
             Path(__file__).parent.joinpath("templates").joinpath("html")
         )
+
+    def _init_resources(self, resources: Dict[str, Any]) -> Dict[str, Any]:
+        """Add additional metadata to the Jinja context via the resources
+        dictionary.
+        """
+        resources = super()._init_resources(resources)
+        resources["Learn"] = "Astropy!"
+        return resources
