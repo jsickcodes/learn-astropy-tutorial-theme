@@ -32,4 +32,8 @@ class LearnAstropyHtmlExporter(HTMLExporter):
         """
         resources = super()._init_resources(resources)
         resources["Learn"] = "Astropy!"
+
+        # Toggle between 'light' and 'dark' themes
+        resources["theme"] = "light"
+
         return resources
