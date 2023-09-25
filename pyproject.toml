@@ -37,7 +37,7 @@ dev = [
 Source = "https://github.com/jsickcodes/learn-astropy-tutorial-theme"
 
 [project.entry-points."nbconvert.exporters"]
-learn-astropy = "learnastropytutorialtheme.exporter:LearnAstropyExporter"
+learn-astropy = "learnastropytutorialtheme.html:LearnAstropyExporter"
 
 [build-system]
 requires = [
