@@ -1,11 +1,27 @@
 :root {
   --astropy-primary-color: #fa743b;
+
+  /* Set base font-size that all rems become relative to. */
+  font-size: 1.2rem;
+}
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #000;
 }
 
 body {
   display: grid;
   grid-template-columns: 18rem 1fr;
   grid-template-rows: auto 1fr auto;
+}
+
+/* Set base color tokens for the dark theme. */
+body[jp-theme-light="false"] {
+  color: #fff;
 }
 
 body.jp-Notebook {
