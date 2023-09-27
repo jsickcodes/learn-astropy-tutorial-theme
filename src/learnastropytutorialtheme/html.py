@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Any, Dict
 
 from nbconvert.exporters.html import HTMLExporter
+from traitlets.config import Config
+
+from .tocpreprocessor import TocPreprocessor
 
 
 class LearnAstropyHtmlExporter(HTMLExporter):
@@ -14,6 +17,12 @@ class LearnAstropyHtmlExporter(HTMLExporter):
     export_from_notebook = "Learn Astropy HTML"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # Require the TocPreprocessor to populate the table of contents
+        # in the resources
+        if "config" not in kwargs:
+            kwargs["config"] = Config()
+        kwargs["config"].HTMLExporter.preprocessors = [TocPreprocessor]
+
         super().__init__(*args, **kwargs)
 
         # Add the default template to the search path

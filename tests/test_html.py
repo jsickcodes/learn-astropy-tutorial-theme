@@ -6,6 +6,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from traitlets.config import Config
 
 from learnastropytutorialtheme.html import LearnAstropyHtmlExporter
 
@@ -34,7 +35,9 @@ def test_html_export(theme: str) -> None:
         ),
     }
 
-    exporter = LearnAstropyHtmlExporter()
+    config = Config()
+
+    exporter = LearnAstropyHtmlExporter(config=config)
     exporter.theme = theme
     html, resources = exporter.from_filename(
         str(test_notebook.resolve()), resources=resources
