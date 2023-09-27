@@ -21,7 +21,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "nbconvert"
+    "nbconvert",
+    "markdown-it-py",
 ]
 dynamic = ["version"]
 
