@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Tuple
+from collections.abc import Collection
+from dataclasses import dataclass
+from typing import Any, Dict, Iterator, List, Tuple
 
+from markdown_it import MarkdownIt
+from markdown_it.tree import SyntaxTreeNode
 from nbconvert.preprocessors import Preprocessor
 from nbformat import NotebookNode
 
@@ -11,6 +15,15 @@ from nbformat import NotebookNode
 class TocPreprocessor(Preprocessor):
     """An nbconvert preprocessor that extracts the document outline (TOC)
     into the resources for the HTML exporter to use.
+
+    The TOC is available under the key `learn_astropy_toc` in the resources
+    dictionary. It is a list of dictionaries, each of which represents a
+    section in the document. Each dictionary has the following keys:
+
+    - `title`: The plain text title of the section.
+    - `children`: A list of dictionaries representing the children of the
+      section.
+    - `level`: The heading level of the section.
     """
 
     def preprocess(
@@ -19,5 +32,92 @@ class TocPreprocessor(Preprocessor):
         """Extract the document outline (TOC) into the resources for the HTML
         exporter to use.
         """
-        resources["learn_astropy_toc"] = "hello from toc"
+        markdown = self._extract_markdown(nb)
+        md = MarkdownIt()
+        md_tokens = md.parse(markdown)
+        token_tree = SyntaxTreeNode(md_tokens)
+        sections = SectionChildren([])
+        heading_nodes = [n for n in token_tree.children if n.type == "heading"]
+        for node in heading_nodes:
+            section = Section.create_from_node(node)
+            sections.insert_section(section)
+
+        # Add the document outine, including only the sections, but not
+        # the h1 title
+        resources["learn_astropy_toc"] = sections[0].children.export()
+
         return nb, resources
+
+    def _extract_markdown(self, nb: NotebookNode) -> str:
+        """Extract the markdown content from the notebook."""
+        markdown_cells = [
+            c.source for c in nb.cells if c.cell_type == "markdown"
+        ]
+        return "\n\n".join(markdown_cells)
+
+
+class SectionChildren(Collection):
+    """A collection of Section objects."""
+
+    def __init__(self, sections: List[Section]) -> None:
+        self._sections = sections
+
+    def __contains__(self, x: object) -> bool:
+        return x in self._sections
+
+    def __iter__(self) -> Iterator[Section]:
+        return iter(self._sections)
+
+    def __len__(self) -> int:
+        return len(self._sections)
+
+    def __getitem__(self, index: int) -> Section:
+        return self._sections[index]
+
+    def __repr__(self) -> str:
+        return f"SectionChildren({self._sections})"
+
+    def insert_section(self, section: Section) -> None:
+        """Insert a section at the correct level of hierarchy."""
+        if len(self) == 0:
+            # No children, so append
+            self._sections.append(section)
+        elif self._sections[-1].level == section.level:
+            # Same level as direct children, so append
+            self._sections.append(section)
+        else:
+            # Not the same level as direct children, so insert into last child
+            self._sections[-1].children.insert_section(section)
+
+    def export(self) -> list[dict]:
+        """Export the section hierarchy as a list of dictionaries."""
+        return [s.as_dict() for s in self._sections]
+
+
+@dataclass
+class Section:
+    """A section in the document and its children."""
+
+    title: str
+    """The plain text title of the section."""
+
+    children: SectionChildren
+    """The children of the section."""
+
+    level: int = 0
+    """The heading level of the section."""
+
+    @classmethod
+    def create_from_node(cls, node: SyntaxTreeNode) -> Section:
+        """Create a section from a Markdown heading node."""
+        title = node.children[0].content
+        level = int(node.tag.lstrip("h"))
+        return cls(title=title, children=SectionChildren([]), level=level)
+
+    def as_dict(self) -> Dict[str, Any]:
+        """Convert the section to a dictionary."""
+        return {
+            "title": self.title,
+            "children": [c.as_dict() for c in self.children],
+            "level": self.level,
+        }

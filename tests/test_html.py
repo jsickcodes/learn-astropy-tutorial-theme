@@ -1,9 +1,12 @@
 """Test for the Learn Astropy HTML theme."""
 
+# mypy: disable-error-code="unreachable"
+
 from __future__ import annotations
 
-from copy import deepcopy
 from pathlib import Path
+from pprint import pprint
+from typing import Any, Dict, List, cast
 
 import pytest
 from traitlets.config import Config
@@ -43,5 +46,27 @@ def test_html_export(theme: str) -> None:
         str(test_notebook.resolve()), resources=resources
     )
 
-    resources = deepcopy(resources)
+    assert "learn_astropy_toc" in resources
+    toc = resources["learn_astropy_toc"]
+    pprint(toc)
+    # mypy insists that `toc` is a `str` here, but it's actually a
+    # `list[dict[str, Any]]`. Doing a cast doesn't work?
+    toc = cast(List[Dict[str, Any]], toc)  # type: ignore[assignment]
+    assert isinstance(toc, list)  # type: ignore[unreachable]
+    # reveal_type(toc)
+    assert toc[0]["title"] == "Authors"
+    assert toc[1]["title"] == "Learning Goals"
+    assert toc[2]["title"] == "Keywords"
+    assert toc[3]["title"] == "Companion Content"
+    assert toc[4]["title"] == "Summary"
+    assert toc[5]["title"] == "Introduction"
+    assert toc[6]["title"] == "Examples"
+    assert toc[6]["children"][0]["title"] == "Investigate Extinction Models"
+    assert toc[6]["children"][1]["title"] == "Deredden a Spectrum"
+    assert (
+        toc[6]["children"][2]["title"]
+        == "Calculate Color Excess with `synphot`"
+    )
+    assert toc[7]["title"] == "Exercise"
+
     write_conversion(base_dir=theme, content=html, resources=resources)
