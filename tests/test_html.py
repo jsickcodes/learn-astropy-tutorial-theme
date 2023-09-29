@@ -55,18 +55,30 @@ def test_html_export(theme: str) -> None:
     assert isinstance(toc, list)  # type: ignore[unreachable]
     # reveal_type(toc)
     assert toc[0]["title"] == "Authors"
+    assert toc[0]["href"] == "#Authors"
     assert toc[1]["title"] == "Learning Goals"
+    assert toc[1]["href"] == "#Learning-Goals"
     assert toc[2]["title"] == "Keywords"
+    assert toc[2]["href"] == "#Keywords"
     assert toc[3]["title"] == "Companion Content"
+    assert toc[3]["href"] == "#Companion-Content"
     assert toc[4]["title"] == "Summary"
+    assert toc[4]["href"] == "#Summary"
     assert toc[5]["title"] == "Introduction"
+    assert toc[5]["href"] == "#Introduction"
     assert toc[6]["title"] == "Examples"
+    assert toc[6]["href"] == "#Examples"
     assert toc[6]["children"][0]["title"] == "Investigate Extinction Models"
+    assert toc[6]["children"][0]["href"] == "#Investigate-Extinction-Models"
     assert toc[6]["children"][1]["title"] == "Deredden a Spectrum"
+    assert toc[6]["children"][1]["href"] == "#Deredden-a-Spectrum"
     assert (
-        toc[6]["children"][2]["title"]
-        == "Calculate Color Excess with `synphot`"
+        toc[6]["children"][2]["title"] == "Calculate Color Excess with synphot"
+    )
+    assert (
+        toc[6]["children"][2]["href"] == "#Calculate-Color-Excess-with-synphot"
     )
     assert toc[7]["title"] == "Exercise"
+    assert toc[7]["href"] == "#Exercise"
 
     write_conversion(base_dir=theme, content=html, resources=resources)

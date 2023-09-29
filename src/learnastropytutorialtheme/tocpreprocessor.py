@@ -6,8 +6,10 @@ from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Tuple
 
+from bs4 import BeautifulSoup
 from markdown_it import MarkdownIt
 from markdown_it.tree import SyntaxTreeNode
+from nbconvert.filters import add_anchor
 from nbconvert.preprocessors import Preprocessor
 from nbformat import NotebookNode
 
@@ -23,6 +25,7 @@ class TocPreprocessor(Preprocessor):
     - `title`: The plain text title of the section.
     - `children`: A list of dictionaries representing the children of the
       section.
+    - `href`: The href of the section. E.g. ``#Section-title``.
     - `level`: The heading level of the section.
     """
 
@@ -104,20 +107,45 @@ class Section:
     children: SectionChildren
     """The children of the section."""
 
+    href: str = "#"
+    """The href of the section."""
+
     level: int = 0
     """The heading level of the section."""
 
     @classmethod
     def create_from_node(cls, node: SyntaxTreeNode) -> Section:
         """Create a section from a Markdown heading node."""
+        # The content of the heading can contain inline formatting. This is
+        # a basic way to strip out code, bold, and italics. We need to
+        # revisit this to strip out links.
         title = node.children[0].content
+        title = title.replace("`", "")
+        title = title.replace("*", "")
+        title = title.replace("_", "")
+
         level = int(node.tag.lstrip("h"))
-        return cls(title=title, children=SectionChildren([]), level=level)
+
+        # Use nbconvert's own add_anchor function to compute the anchor
+        # href. Unfortunately this relies on a roundtrip through HTML. The
+        # function that works directly on the title text isn't a pubilc API.
+        header_html = f"<h{level}>{title}</h{level}>"
+        header_html = add_anchor(header_html, anchor_link_text="#")
+        header_soup = BeautifulSoup(header_html, "html.parser")
+        try:
+            href = header_soup.find("a")["href"]
+        except KeyError:
+            href = "#"
+
+        return cls(
+            title=title, children=SectionChildren([]), href=href, level=level
+        )
 
     def as_dict(self) -> Dict[str, Any]:
         """Convert the section to a dictionary."""
         return {
             "title": self.title,
             "children": [c.as_dict() for c in self.children],
+            "href": self.href,
             "level": self.level,
         }

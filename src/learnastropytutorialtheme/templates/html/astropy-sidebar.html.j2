@@ -2,7 +2,7 @@
 
 <ol class="at-outline">
 {% for section in sections %}
-<li><a href="#">{{ section.title }}</a>
+<li><a href="{{ section.href }}">{{ section.title }}</a>
 
 {% if section.children|length > 0 %}
 {{ toc_sections(section.children) }}

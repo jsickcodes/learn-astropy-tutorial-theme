@@ -21,6 +21,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
+    "beautifulsoup4",
     "nbconvert",
     "markdown-it-py",
 ]
