@@ -50,6 +50,13 @@ main {
   padding: 0.5rem;
 }
 
+.at-notebook-sidebar__content {
+  position: sticky;
+  top: 1rem;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
 .at-tutorial-footer {
   grid-area: 3 / 1 / 4 / 3;
   padding: 0.5rem;
@@ -90,4 +97,14 @@ main {
   margin-top: 2rem;
   border-top: 1px solid var(--astropy-primary-color);
   width: 100%;
+}
+
+.at-outline {
+  list-style-type: none;
+  padding-left: 1rem;
+}
+
+.at-notebook-sidebar-section > .at-outline {
+  /* Make the root level section not have any indentation */
+  padding-left: 0;
 }
