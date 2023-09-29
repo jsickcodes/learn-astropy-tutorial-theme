@@ -19,3 +19,32 @@ You can configure these links by setting the `resources` parameter when running 
 - `learn_astropy_source_url`. The URL to the notebook in a source code repository, such as GitHub. Omit this field if you do not want to include a link to the source code.
 - `learn_astropy_source_label`. The text for the link to the source code. Defaults to "View on GitHub".
 - `learn_astropy_ipynb_download_url`. The URL to download this notebook as a Jupyter notebook file. Omit this field if you do not want to include a link to download the notebook.
+
+## Usage with Python API
+
+```python
+from pathlib import Path
+from traitlets.config import Config
+from learnastropytutorialtheme.html import LearnAstropyHtmlExporter
+
+nb_path = Path("path/to/notebook.ipynb")
+
+config = Config()  # add additional nbconvert exporter configuration here
+
+# Add theme configuration / metadata
+resources = {
+    "learn_astropy_editor_url": "https://mybinder.org/v2/gh/...",
+    "learn_astropy_source_url": "https://github.com/...",
+    "learn_astropy_ipynb_download_url": (
+        "https://learn.astropy.org/tutorials/..."
+    ),
+}
+
+exporter = LearnAstropyHtmlExporter(config=config)
+exporter.theme = "light"  # or "dark"
+html, resources = exporter.from_filename(str(nb_path), resources=resources)
+
+Path(f"{resources['name']}.html").write_text(html)
+for name, content in resources["outputs"].items():
+    Path(name).write_bytes(content)
+```
